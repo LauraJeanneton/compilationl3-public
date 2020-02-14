@@ -139,7 +139,7 @@ public class Sc2sa extends DepthFirstAdapter {
         String nom;
         int taille;
         node.getIdentif().apply(this);
-        nom = String.valueOf(this.returnValue);
+        nom = String.valueOf(node.getIdentif());
         node.getNombre().apply(this);
         taille = Integer.parseInt(String.valueOf(node.getNombre()).trim());
         returnValue = new SaDecTab(nom, taille);
