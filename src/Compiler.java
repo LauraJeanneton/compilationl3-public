@@ -1,4 +1,6 @@
 import c3a.C3a;
+import fg.Fg;
+import nasm.Nasm;
 import sa.Sa2Xml;
 import sa.SaNode;
 import sc.lexer.Lexer;
@@ -24,12 +26,13 @@ public class Compiler {
         File[] listOfFiles = folder.listFiles();
         for (int i = 0; i < listOfFiles.length; i++) {
             if (listOfFiles[i].isFile() && listOfFiles[i].getName().endsWith(".l")) {
+                if(!listOfFiles[i].getName().contains("tab1"))
                 fileNames.add(listOfFiles[i].getAbsolutePath());
             }
         }
         try {
             for (String file : fileNames) {
-                //if (file.equals("C:\\Users\\Laura\\Desktop\\Fac\\S6\\Compilation\\compilationl3-public\\test\\input\\add1.l")) {
+                //if (file.equals("C:\\Users\\Laura\\Desktop\\compilationl3-public\\test\\input\\add1.l")) {
                 br = new PushbackReader(new FileReader(file));
                 baseName = removeSuffix(file, ".l");
 
@@ -45,23 +48,28 @@ public class Compiler {
                     tree.apply(sc2sa);
                     SaNode saRoot = sc2sa.getRoot();
                     new Sa2Xml(saRoot, baseName);
+                    if(!compareTest(baseName,".sa"))System.out.println("False sa: " +baseName);
                     //System.out.println("Fin de l'arbre ");
 
                     //System.out.println("[TABLE SYMBOLES]");
                     Ts table = new Sa2ts(saRoot).getTableGlobale();
                     table.afficheTout(baseName);
-
+                    if(!compareTest(baseName,".ts"))System.out.println("False ts: " +baseName);
                     //System.out.println("[C3A]");
 	                C3a c3a = new Sa2c3a(saRoot, table).getC3a();
 	                c3a.affiche(baseName);
-                    if(!compareTest(baseName)) System.out.println("False");
+                    if(!compareTest(baseName,".c3a"))System.out.println("False c3a: " +baseName);
+
+	                Nasm nasm = new C3a2nasm(c3a, table).getNasm();
+	                 nasm.affichePre(baseName);
+                    //if(!compareTest(baseName,".pre-nasm"))System.out.println("False pre-nasm: " +baseName);
+	                nasm.affiche(baseName);
+	                //if(!compareTest(baseName,".nasm"))System.out.println("False nasm: " +baseName);
+
+            	    Fg fg = new Fg(nasm);
+	                fg.affiche(baseName);
+                    if(!compareTest(baseName,".fg"))System.out.println("False fg: " +baseName);
 	    /*
-	    System.out.println("[NASM]");
-	    Nasm nasm = new C3a2nasm(c3a, table).getNasm();
-	    nasm.affiche(baseName);
-	    System.out.println("[FLOW GRAPH]");
-	    Fg fg = new Fg(nasm);
-	    fg.affiche(baseName);
 	    System.out.println("[FLOW GRAPH SOLVE]");
 	    FgSolution fgSolution = new FgSolution(nasm, fg);
 	    fgSolution.affiche(baseName);*/
@@ -86,34 +94,40 @@ public class Compiler {
     }
 
 
-    public static boolean compareTest(String baseName) throws FileNotFoundException {
+    public static boolean compareTest(String baseName,String extension) throws FileNotFoundException {
         boolean same=false;
         List<String> fileNames = new ArrayList<>();
-        File folder = new File("test\\c3a-ref");
+        String path;
+        if(extension.equals(".pre-nasm")) path = "test\\prenasm-ref";
+        else path = "test\\"+extension.substring(1)+"-ref";
+        File folder = new File(path);
         File[] listOfFiles = folder.listFiles();
         for (int i = 0; i < listOfFiles.length; i++) {
-            if (listOfFiles[i].isFile() && listOfFiles[i].getName().endsWith(".c3a")) {
+            if (listOfFiles[i].isFile() && listOfFiles[i].getName().endsWith(extension)) {
                 fileNames.add(listOfFiles[i].getAbsolutePath());
             }
         }
-        String newBaseName=baseName.substring(74)+".c3a";
+        String newBaseName=baseName.substring(55)+extension;
         for (String file : fileNames) {
-            String newfile=file.substring(76);
+            int toSub = 54+ (extension.length()-1) ;
+            if (extension.equals(".pre-nasm")) toSub= toSub-1;
+            String newfile=file.substring(toSub);
+           // System.out.println(newBaseName + " " + newfile);
             if(newfile.equals(newBaseName)) {
-                same = compareFiles(file,baseName);
+                same = compareFiles(file,baseName,extension);
             }
         }
         return same;
     }
 
-    public static boolean compareFiles(String path1, String path2){
-        path2=path2+".c3a";
+    public static boolean compareFiles(String path1, String path2,String extension){
+        path2=path2+extension;
         try{
             List<String> listF1 = Files.readAllLines(Paths.get(path1));
             List<String> listF2 = Files.readAllLines(Paths.get(path2));
             return listF1.containsAll(listF2) && listF2.containsAll(listF1);
         }catch(IOException ie) {
-            System.out.println("File different : " + path1.substring(76));
+            System.out.println("File different : " + path1.substring(55));
         }
         return false;
     }
