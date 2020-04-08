@@ -30,7 +30,7 @@ public class Compiler {
         File[] listOfFiles = folder.listFiles();
         for (int i = 0; i < listOfFiles.length; i++) {
             if (listOfFiles[i].isFile() && listOfFiles[i].getName().endsWith(".l")) {
-                if(!listOfFiles[i].getName().contains("tab1"))
+                 if(!listOfFiles[i].getName().contains("tab1"))
                     fileNames.add(listOfFiles[i].getAbsolutePath());
             }
         }
@@ -62,9 +62,9 @@ public class Compiler {
                     if(!compareTest(baseName,".ts")) System.out.println("False ts : " + baseName);
 
 
-//                    SaEval saEval = new SaEval(saRoot, table);
-//                    saEval.affiche(baseName);
-                  //  if(!compareTest(baseName,".saout")) System.out.println("False saout : " + baseName);
+                    SaEval saEval = new SaEval(saRoot, table);
+                    saEval.affiche(baseName);
+                    if(!compareTest(baseName,".saout")) System.out.println("False saout : " + baseName);
 
 
                     C3a c3a = new Sa2c3a(saRoot, table).getC3a();
@@ -80,7 +80,7 @@ public class Compiler {
                     Nasm nasm = new C3a2nasm(c3a, table).getNasm();
                     //System.out.println("[PRINT PRE NASM] ");
                     nasm.affichePre(baseName);
-                    //if(!compareTest(baseName,".pre-nasm"))System.out.println("False prenasm: " +baseName);
+                 //  if(!compareTest(baseName,".pre-nasm"))System.out.println("False prenasm: " +baseName);
 
              //       System.out.print("[BUILD FG] ");
                     Fg fg = new Fg(nasm);

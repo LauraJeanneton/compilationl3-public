@@ -1,77 +1,78 @@
 import sa.*;
-import ts.Ts;
-import ts.TsItemVar;
+import ts.*;
 
 public class Sa2ts extends SaDepthFirstVisitor {
-    Ts tableGlobale = new Ts();
-    Ts tableLocale;
-    int param=0;
 
-    public Sa2ts(SaNode saRoot) {
-        visit((SaProg) saRoot);
+
+    private Ts tableGlobale;
+    private Ts tableLocale;
+
+    private char param;
+
+    public Sa2ts(SaNode root) {
+        tableGlobale = new Ts();
+        param = 'g';
+        root.accept(this);
     }
 
     public Ts getTableGlobale() {
-       return tableGlobale;
+        return tableGlobale;
     }
 
-    @Override
-    public Object visit(SaDecTab node) {
-        if(tableLocale!=null) {
-            if (tableGlobale.variables.size() < param){
-                tableLocale.addVar(node.getNom(), node.getTaille());
-            }
-            else{
-                tableLocale.addParam(node.getNom());
-            }
-        }
-        else {
-            tableGlobale.addVar(node.getNom(),node.getTaille());
-        }
-        return super.visit(node);
-    }
-
-    @Override
-    public Object visit(SaDecFonc node) {
-        if(node.getParametres()==null){
-            param=0;
-        }
-        else {
-            param = node.getParametres().length();
-        }
-        tableLocale = new Ts();
-        tableGlobale.addFct(node.getNom(),param,tableLocale,node);
-        return super.visit(node);
-    }
-
-    @Override
     public Object visit(SaDecVar node) {
-        if(tableLocale!=null) {
-            if (tableLocale.variables.size() < param){
-                tableLocale.addParam(node.getNom());
-            }
-            else{
-                tableLocale.addVar(node.getNom(),1);
-            }
-        }
-        else {
-            tableGlobale.addVar(node.getNom(),1);
-        }
-        return super.visit(node);
+        TsItemVar tsItemVar = null;
+            if (param == 'g') tsItemVar = tableGlobale.addVar(node.getNom(), 1);
+            else if (param == 'l') tsItemVar = tableLocale.addVar(node.getNom(), 1);
+            else tsItemVar = tableLocale.addParam(node.getNom());
+            node.tsItem = tsItemVar;
+        return null;
     }
 
-    @Override
+    public Object visit(SaDecTab node){
+        TsItemVar item = null;
+        if(param == 'g') item = tableGlobale.addVar(node.getNom(), node.getTaille());
+        node.tsItem = item;
+        return null;
+    }
+
+    public Object visit(SaDecFonc node) {
+        Ts table = new Ts();
+        TsItemFct item = tableGlobale.addFct(node.getNom(), node.getParametres() != null ? node.getParametres().length() : 0, table, node);
+        node.tsItem = item;
+        tableLocale = table;
+        param = 'a';
+        if(node.getParametres() != null) node.getParametres().accept(this);
+        param = 'l';
+        if(node.getVariable() != null) node.getVariable().accept(this);
+        node.getCorps().accept(this);
+        param = 'g';
+        return null;
+    }
+
+
     public Object visit(SaVarSimple node) {
-        return super.visit(node);
+        TsItemVar itemLoc = tableLocale.getVar(node.getNom());
+        TsItemVar itemGlob = tableGlobale.getVar(node.getNom());
+        if (itemLoc != null) node.tsItem = itemLoc;
+        if (itemGlob != null) node.tsItem = itemGlob;
+        return null;
     }
 
-    @Override
-    public Object visit(SaAppel node) {
-        return super.visit(node);
-    }
-
-    @Override
     public Object visit(SaVarIndicee node) {
-        return super.visit(node);
+        node.getIndice().accept(this);
+        TsItemVar itemLoc = tableLocale.getVar(node.getNom());
+        TsItemVar itemGlob = tableGlobale.getVar(node.getNom());
+        if (itemLoc != null) node.tsItem = itemLoc;
+        if (itemGlob != null) node.tsItem = itemGlob;
+        return null;
+    }
+
+    public Object visit(SaAppel node) {
+        if(node.getArguments() != null) node.getArguments().accept(this);
+        TsItemFct itemLoc = tableLocale.getFct(node.getNom());
+        TsItemFct itemGlob = tableGlobale.getFct(node.getNom());
+        if (itemLoc != null) node.tsItem = itemLoc;
+        if (itemGlob != null) node.tsItem = itemGlob;
+        return null;
     }
 }
