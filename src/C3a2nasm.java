@@ -8,11 +8,14 @@ public class C3a2nasm implements C3aVisitor <NasmOperand> {
     private Nasm nasm;
     private Ts tableGlobale;
     private TsItemFct currentFct;
+    private C3a c3a;
 
 
     public C3a2nasm(C3a c3a, Ts ts) {
         this.nasm = new Nasm(ts);
+        this.c3a=c3a;
         this.tableGlobale = ts;
+        nasm.setTempCounter(c3a.getTempCounter());
         this.init();
         for (C3aInst c3aInst : c3a.listeInst){
             c3aInst.accept(this);
@@ -25,9 +28,8 @@ public class C3a2nasm implements C3aVisitor <NasmOperand> {
     }
 
     public void init() {
-        NasmLabel nasmLabel = new NasmLabel("main");
         this.currentFct = tableGlobale.getFct("main");
-        nasm.ajouteInst(new NasmCall(null, nasmLabel, ""));
+        nasm.ajouteInst(new NasmCall(null, new NasmLabel("main"), ""));
 
         NasmRegister nasmRegister = nasm.newRegister();
         nasmRegister.colorRegister(Nasm.REG_EBX);
@@ -85,12 +87,9 @@ public class C3a2nasm implements C3aVisitor <NasmOperand> {
         nasm.ajouteInst(new NasmPush(nasmOperand, EBPRegister,"sauvegarde la valeur de ebp"));
         nasm.ajouteInst(new NasmMov(null, EBPRegister,ESPRegister, "nouvelle valeur de ebp"));
         this.currentFct = inst.val;
-        int num = 0;
-        for (TsItemVar tsItemVar : inst.val.getTable().variables.values()) {
-            if(tsItemVar!=null)num =num+ 4;
-        }
 
-        nasm.ajouteInst(new NasmSub(null, ESPRegister, new NasmConstant(num), "allocation des variables locales"));
+
+        nasm.ajouteInst(new NasmSub(null, ESPRegister, new NasmConstant(4*currentFct.getTable().nbVar()), "allocation des variables locales"));
         return null;
     }
 
@@ -185,8 +184,7 @@ public class C3a2nasm implements C3aVisitor <NasmOperand> {
         NasmRegister nasmRegister = new NasmRegister(Nasm.REG_ESP);
         nasmRegister.colorRegister(Nasm.REG_ESP);
 
-        int space = tableGlobale.getFct(currentFct.identif).getTable().variables.size()*4;
-        nasm.ajouteInst(new NasmAdd(label, nasmRegister, new NasmConstant(space), "désallocation des variables locales"));
+        nasm.ajouteInst(new NasmAdd(label, nasmRegister, new NasmConstant(4*currentFct.getTable().nbVar()), "désallocation des variables locales"));
         NasmRegister nasmRegisterEBP = new NasmRegister(Nasm.REG_EBP);
         nasmRegisterEBP.colorRegister(Nasm.REG_EBP);
         nasm.ajouteInst(new NasmPop(null, nasmRegisterEBP, "restaure la valeur de ebp"));

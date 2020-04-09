@@ -37,27 +37,21 @@ public class Compiler {
 
         try {
             for (String file : fileNames) {
-               // if(file.contains("affect")){
+                //if(file.contains("div1")){
                 br = new PushbackReader(new FileReader(file));
                 baseName = removeSuffix(file, ".l");
                 try {
                     Parser p = new Parser(new Lexer(br));
-                //    System.out.print("[BUILD SC] ");
                     Start tree = p.parse();
-                //    System.out.println("[PRINT SC]");
                     tree.apply(new Sc2Xml(baseName));
 
-               //     System.out.print("[BUILD SA] ");
                     Sc2sa sc2sa = new Sc2sa();
                     tree.apply(sc2sa);
                     SaNode saRoot = sc2sa.getRoot();
-               //     System.out.println("[PRINT SA]");
                     new Sa2Xml(saRoot, baseName);
                     if(!compareTest(baseName,".sa")) System.out.println("False sa : " + baseName);
 
-                 //   System.out.print("[BUILD TS] ");
                     Ts table = new Sa2ts(saRoot).getTableGlobale();
-                 //   System.out.println("[PRINT TS]");
                     table.afficheTout(baseName);
                     if(!compareTest(baseName,".ts")) System.out.println("False ts : " + baseName);
 
@@ -76,36 +70,33 @@ public class Compiler {
                     if(!compareTest(baseName,".c3aout"))System.out.println("False c3aout: " +baseName);
 
 
-                    //System.out.print("[BUILD PRE NASM] ");
                     Nasm nasm = new C3a2nasm(c3a, table).getNasm();
-                    //System.out.println("[PRINT PRE NASM] ");
                     nasm.affichePre(baseName);
-                 //  if(!compareTest(baseName,".pre-nasm"))System.out.println("False prenasm: " +baseName);
+                   //if(!compareTest(baseName,".pre-nasm"))System.out.println("False prenasm: " +baseName);
 
-             //       System.out.print("[BUILD FG] ");
                     Fg fg = new Fg(nasm);
-                 //   System.out.print("[PRINT FG] ");
                     fg.affiche(baseName);
-                   // if(!compareTest(baseName,".fg"))System.out.println("False fg: " +baseName);
-//
-//
-//                    System.out.println("[SOLVE FG]");
-//                    FgSolution fgSolution = new FgSolution(nasm, fg);
-//                    fgSolution.affiche(baseName);
-//
-//                    System.out.print("[BUILD IG] ");
-//                    Ig ig = new Ig(fgSolution);
-//                    System.out.print("[PRINT IG] ");
-//                    ig.affiche(baseName);
-//                    System.out.println("[ALLOCATE REGISTERS]");
-//                    ig.allocateRegisters();
-//                    System.out.println("[PRINT NASM]");
-//                    nasm.affiche(baseName);
+                    //if(!compareTest(baseName,".fg"))System.out.println("False fg: " +baseName);
+
+
+
+                    FgSolution fgSolution = new FgSolution(nasm, fg);
+                    fgSolution.affiche(baseName);
+                    //if(!compareTest(baseName,".fgs"))System.out.println("False fgs: " +baseName);
+                //    System.out.print("[BUILD IG] ");
+                    Ig ig = new Ig(fgSolution);
+                  //  System.out.print("[PRINT IG] ");
+                    ig.affiche(baseName);
+                //    System.out.println("[ALLOCATE REGISTERS]");
+                    ig.allocateRegisters();
+               //     System.out.println("[PRINT NASM]");
+                    nasm.affiche(baseName);
+                 //   if(!compareTest(baseName,".nasm"))System.out.println("False nasm: " +baseName);
 
                 } catch (Exception e) {
                     System.out.println("ERROR : " + baseName);
                 }
-               //   } ////
+               //  } ////
             }
         } catch (IOException e) {
             e.printStackTrace();
