@@ -1,11 +1,9 @@
 package util.graph;
 
-import util.graph.*;
+
 import util.intset.*;
 
-import java.sql.Array;
 import java.util.*;
-import java.io.*;
 
 public class ColorGraph {
     public Graph G;
@@ -21,7 +19,7 @@ public class ColorGraph {
     public ColorGraph(Graph G, int K, int[] phi) {
         this.G = G;
         this.K = K;
-        pile = new Stack<Integer>();
+        pile = new Stack<>();
         R = G.nodeCount();
         couleur = new int[R];
         enleves = new IntSet(R);
@@ -134,7 +132,7 @@ public class ColorGraph {
     /* à la fin du processus, le graphe peut ne pas être vide, il s'agit des temporaires qui ont au moins k voisin */
     /*-------------------------------------------------------------------------------------------------------------*/
 
-    public int simplification() {
+    public void simplification() {
 
         boolean modif = true;
         int count = 0;
@@ -161,7 +159,6 @@ public class ColorGraph {
         }
 
 
-        return -1;
     }
 
     /*-------------------------------------------------------------------------------------------------------------*/

@@ -22,9 +22,9 @@ public class Fg implements NasmVisitor <Void> {
 
     public Fg(Nasm nasm){
         this.nasm = nasm;
-        this.inst2Node = new HashMap< NasmInst, Node>();
-        this.node2Inst = new HashMap< Node, NasmInst>();
-        this.label2Inst = new HashMap< String, NasmInst>();
+        this.inst2Node = new HashMap<>();
+        this.node2Inst = new HashMap<>();
+        this.label2Inst = new HashMap<>();
         this.graph = new Graph();
 
         createAll();
@@ -47,7 +47,6 @@ public class Fg implements NasmVisitor <Void> {
 
         if (baseFileName != null){
             try {
-                baseFileName = baseFileName;
                 fileName = baseFileName + ".fg";
                 out = new PrintStream(fileName);
             }
@@ -68,21 +67,6 @@ public class Fg implements NasmVisitor <Void> {
         }
 
     }
-
-
-
-    void createNode(NasmInst inst) {
-        Node node = graph.newNode();
-        inst2Node.put(inst, node);
-        node2Inst.put(node, inst);
-        if (inst.label != null) {
-            label2Inst.put(inst.label.toString(),inst);
-        }
-        for (NasmInst nasmInst : nasm.listeInst) {
-            nasmInst.accept(this);
-        }
-    }
-
 
 
     void createNextArc(NasmInst inst) {

@@ -13,7 +13,7 @@ public class Ig {
 	public FgSolution fgs;
 	public int regNb;
 	public Nasm nasm;
-	public Node int2Node[];
+	public Node[] int2Node;
 	public ColorGraph cg;
 
 
@@ -146,7 +146,6 @@ public class Ig {
 
 		if (baseFileName != null) {
 			try {
-				baseFileName = baseFileName;
 				fileName = baseFileName + ".ig";
 				out = new PrintStream(fileName);
 			} catch (IOException e) {

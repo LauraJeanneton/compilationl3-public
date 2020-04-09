@@ -5,9 +5,7 @@ import sc.node.*;
 class Sc2Xml extends DepthFirstAdapter
 {
     private int indentation;
-    private String baseFileName;
-    private String fileName;
-    private PrintStream out;
+	private PrintStream out;
     
     public Sc2Xml(String baseFileName)
     {
@@ -18,9 +16,8 @@ class Sc2Xml extends DepthFirstAdapter
 	}
 	else{
 	    try {
-		this.baseFileName = baseFileName;
-		this.fileName = baseFileName + ".sc";
-		this.out = new PrintStream(this.fileName);
+			String fileName = baseFileName + ".sc";
+		this.out = new PrintStream(fileName);
 	    }
 	    
 	    catch (IOException e) {

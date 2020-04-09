@@ -22,16 +22,17 @@ import java.util.List;
 public class Compiler {
 
     public static void main(String[] args) {
-        PushbackReader br = null;
-        String baseName = null;
+        PushbackReader br;
+        String baseName;
 
         List<String> fileNames = new ArrayList<>();
         File folder = new File("test\\input");
         File[] listOfFiles = folder.listFiles();
-        for (int i = 0; i < listOfFiles.length; i++) {
-            if (listOfFiles[i].isFile() && listOfFiles[i].getName().endsWith(".l")) {
-                 if(!listOfFiles[i].getName().contains("tab1"))
-                    fileNames.add(listOfFiles[i].getAbsolutePath());
+        assert listOfFiles != null;
+        for (File listOfFile : listOfFiles) {
+            if (listOfFile.isFile() && listOfFile.getName().endsWith(".l")) {
+                if (!listOfFile.getName().contains("tab1"))
+                    fileNames.add(listOfFile.getAbsolutePath());
             }
         }
 
@@ -113,7 +114,7 @@ public class Compiler {
     }
 
 
-    public static boolean compareTest(String baseName,String extension) throws FileNotFoundException {
+    public static boolean compareTest(String baseName,String extension) {
         boolean same=false;
         List<String> fileNames = new ArrayList<>();
         String path;
@@ -121,9 +122,10 @@ public class Compiler {
         else path = "test\\"+extension.substring(1)+"-ref";
         File folder = new File(path);
         File[] listOfFiles = folder.listFiles();
-        for (int i = 0; i < listOfFiles.length; i++) {
-            if (listOfFiles[i].isFile() && listOfFiles[i].getName().endsWith(extension)) {
-                fileNames.add(listOfFiles[i].getAbsolutePath());
+        assert listOfFiles != null;
+        for (File listOfFile : listOfFiles) {
+            if (listOfFile.isFile() && listOfFile.getName().endsWith(extension)) {
+                fileNames.add(listOfFile.getAbsolutePath());
             }
         }
         String newBaseName=baseName.substring(55)+extension;

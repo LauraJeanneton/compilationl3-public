@@ -22,10 +22,10 @@ public class FgSolution implements NasmVisitor<Void> {
 		this.nasm = nasm;
 		MAX_VALUE_REGISTER = nasm.getTempCounter();
 		this.fg = fg;
-		this.use = new HashMap<NasmInst, IntSet>();
-		this.def = new HashMap<NasmInst, IntSet>();
-		this.in = new HashMap<NasmInst, IntSet>();
-		this.out = new HashMap<NasmInst, IntSet>();
+		this.use = new HashMap<>();
+		this.def = new HashMap<>();
+		this.in = new HashMap<>();
+		this.out = new HashMap<>();
 		for (NasmInst inst : nasm.listeInst) {
 			inst.accept(this);
 		}
@@ -108,7 +108,6 @@ public class FgSolution implements NasmVisitor<Void> {
 
 		if (baseFileName != null) {
 			try {
-				baseFileName = baseFileName;
 				fileName = baseFileName + ".fgs";
 				out = new PrintStream(fileName);
 			} catch (IOException e) {

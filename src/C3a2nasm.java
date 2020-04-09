@@ -2,18 +2,15 @@ import c3a.*;
 import nasm.*;
 import ts.Ts;
 import ts.TsItemFct;
-import ts.TsItemVar;
 
 public class C3a2nasm implements C3aVisitor <NasmOperand> {
     private Nasm nasm;
     private Ts tableGlobale;
     private TsItemFct currentFct;
-    private C3a c3a;
 
 
     public C3a2nasm(C3a c3a, Ts ts) {
         this.nasm = new Nasm(ts);
-        this.c3a=c3a;
         this.tableGlobale = ts;
         nasm.setTempCounter(c3a.getTempCounter());
         this.init();

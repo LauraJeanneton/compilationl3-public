@@ -1,4 +1,3 @@
-import jdk.dynalink.NamedOperation;
 import sa.*;
 import sc.analysis.DepthFirstAdapter;
 import sc.node.*;
@@ -56,14 +55,13 @@ public class Sc2sa extends DepthFirstAdapter {
 
     public void caseAMainFonctionMainFonct(AMainFonctionMainFonct node) {
         String nom = "main";
-        SaLDec parametres = null;
         SaLDec variables;
         SaInst corps;
         node.getOptdecvar().apply(this);
         variables = (SaLDec) this.returnValue;
         node.getBloc().apply(this);
         corps = (SaInst) this.returnValue;
-        this.returnValue = new SaDecFonc(nom, parametres, variables, corps);
+        this.returnValue = new SaDecFonc(nom, null, variables, corps);
     }
 
 

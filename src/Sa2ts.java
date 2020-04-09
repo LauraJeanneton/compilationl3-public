@@ -20,7 +20,7 @@ public class Sa2ts extends SaDepthFirstVisitor {
     }
 
     public Object visit(SaDecVar node) {
-        TsItemVar tsItemVar = null;
+        TsItemVar tsItemVar;
             if (param == 'g') tsItemVar = tableGlobale.addVar(node.getNom(), 1);
             else if (param == 'l') tsItemVar = tableLocale.addVar(node.getNom(), 1);
             else tsItemVar = tableLocale.addParam(node.getNom());
