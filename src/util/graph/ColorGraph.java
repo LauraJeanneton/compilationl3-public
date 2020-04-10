@@ -1,8 +1,6 @@
 package util.graph;
 
-
 import util.intset.*;
-
 import java.util.*;
 
 public class ColorGraph {
@@ -39,30 +37,24 @@ public class ColorGraph {
     /*-------------------------------------------------------------------------------------------------------------*/
 
     public void selection() {
-        IntSet c = new IntSet(K);
-
-        for(int index = 0 ; index < c.getSize() ; index++){
-            c.add(index);
+        IntSet intSet = new IntSet(K);
+        for(int index = 0 ; index < intSet.getSize() ; index++) {
+            intSet.add(index);
         }
-
         while(pile.size() != 0){
-            int s = pile.pop();
-            IntSet voisins = couleursVoisins(s);
+            int newPile = pile.pop();
+            IntSet intSetVoisins = couleursVoisins(newPile);
             int counter = 0 ;
-            IntSet cop  = c.copy();
-            IntSet minus = cop.minus(voisins);
-
-            for(int index = 0 ; index < voisins.getSize(); index++){
-                if(voisins.isMember(index))
+            IntSet intSetCopy  = intSet.copy();
+            IntSet intSetMinus = intSetCopy.minus(intSetVoisins);
+            for(int index = 0 ; index < intSetVoisins.getSize(); index++){
+                if(intSetVoisins.isMember(index))
                     counter++ ;
             }
-            if(counter != K && couleur[s]==NOCOLOR){
-                couleur[s] = choisisCouleur(minus);
-
+            if(counter != K && couleur[newPile]==NOCOLOR){
+                couleur[newPile] = choisisCouleur(intSetMinus);
             }
         }
-
-
     }
 
     /*-------------------------------------------------------------------------------------------------------------*/
@@ -70,19 +62,18 @@ public class ColorGraph {
     /*-------------------------------------------------------------------------------------------------------------*/
 
     public IntSet couleursVoisins(int t) {
-        IntSet voisins = new IntSet(K);
-        NodeList voisinList = int2Node[t].succs;
-        while(voisinList != null){
-            Node head =voisinList.head ;
+        IntSet intSetVoisins = new IntSet(K);
+        NodeList listVoisins = int2Node[t].succs;
+        while(listVoisins != null){
+            Node headNode =listVoisins.head ;
             for(int index = 0 ; index < int2Node.length ; index++){
-                if(int2Node[index].equals(head))
+                if(int2Node[index].equals(headNode))
                     if(couleur[index] != -1)
-                        voisins.add(couleur[index]);
-
+                        intSetVoisins.add(couleur[index]);
             }
-            voisinList = voisinList.tail;
+            listVoisins = listVoisins.tail;
         }
-        return voisins ;
+        return intSetVoisins ;
     }
 
     /*-------------------------------------------------------------------------------------------------------------*/
@@ -90,7 +81,6 @@ public class ColorGraph {
     /*-------------------------------------------------------------------------------------------------------------*/
 
     public int choisisCouleur(IntSet voisins) {
-
         for(int index = 0 ; index < voisins.getSize() ; index++){
             if(voisins.isMember(index)) {
                 return index ;
@@ -104,25 +94,23 @@ public class ColorGraph {
     /*-------------------------------------------------------------------------------------------------------------*/
 
     public int nbVoisins(int t) {
-        List<Node> heads = new ArrayList<>();
+        List<Node> listHeads = new ArrayList<>();
         NodeList nodeList = int2Node[t].succ();
-        int count = 0;
+        int counter = 0;
         while(nodeList != null){
-            heads.add(nodeList.head);
+            listHeads.add(nodeList.head);
             nodeList = nodeList.tail;
         }
-
         for(int i = 0 ; i < int2Node.length; i++){
-            for(Node e : heads){
+            for(Node e : listHeads){
                 if(e == int2Node[i]){
                     if(!enleves.isMember(i)){
-                        count++;
+                        counter++;
                     }
                 }
             }
         }
-
-        return count;
+        return counter;
     }
 
     /*-------------------------------------------------------------------------------------------------------------*/
@@ -133,18 +121,16 @@ public class ColorGraph {
     /*-------------------------------------------------------------------------------------------------------------*/
 
     public void simplification() {
-
-        boolean modif = true;
-        int count = 0;
-        for(int c : couleur){
-            if(c == -1){
-                count++;
+        boolean modified = true;
+        int counter = 0;
+        for(int color : couleur){
+            if(color == -1){
+                counter++;
             }
         }
-        int n = R - (R - count);
-
-        while (pile.size() != n && modif ) {
-            modif = false;
+        int num = R - (R - counter);
+        while (pile.size() != num && modified ) {
+            modified = false;
             for (int index = 0; index < int2Node.length; index++) {
                 if (enleves.isMember(index))
                     continue;
@@ -152,20 +138,17 @@ public class ColorGraph {
                 if (i < K && couleur[index] == NOCOLOR) {
                     pile.push(index);
                     enleves.add(index);
-                    modif = true ;
+                    modified = true ;
                 }
 
             }
         }
-
-
     }
 
     /*-------------------------------------------------------------------------------------------------------------*/
     /*-------------------------------------------------------------------------------------------------------------*/
 
     public void debordement() {
-
         while( pile.size() != R ){
             for(int index = 0 ; index < R ; index++){
                 if(!enleves.isMember(index)){
@@ -179,10 +162,8 @@ public class ColorGraph {
         }
     }
 
-
     /*-------------------------------------------------------------------------------------------------------------*/
     /*-------------------------------------------------------------------------------------------------------------*/
-
     public void coloration() {
         this.simplification();
         this.debordement();
